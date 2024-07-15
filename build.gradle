@@ -1,0 +1,172 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.1'
+    id 'io.spring.dependency-management' version '1.1.5'
+    id 'org.openrewrite.rewrite' version '6.16.4'
+    id 'com.github.spotbugs' version '6.0.19'
+}
+
+group = 'api.challenge'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+spotbugs {
+    maxHeapSize = "1g"
+    showProgress = true
+    ignoreFailures = false
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2023.0.2")
+}
+
+dependencies {
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+
+    spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.13.0")
+    rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:2.15.0"))
+    rewrite("org.openrewrite.recipe:rewrite-spring")
+    rewrite("org.openrewrite.recipe:rewrite-migrate-java")
+    rewrite("org.openrewrite.recipe:rewrite-java-security")
+    rewrite("org.openrewrite.recipe:rewrite-static-analysis")
+    rewrite("org.openrewrite.recipe:rewrite-logging-frameworks")
+    rewrite("org.openrewrite.recipe:rewrite-testing-frameworks")
+
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    implementation("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave")
+
+    compileOnly("org.projectlombok:lombok")
+
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.projectlombok:lombok")
+    testImplementation("io.rest-assured:rest-assured")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    testAnnotationProcessor("org.projectlombok:lombok")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks {
+    project.gradle.startParameter.excludedTaskNames.add(":spotbugsTest")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << '-parameters'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            output.dir("$buildDir/generated/sources/annotationProcessor/java/main", builtBy: 'compileJava')
+        }
+    }
+}
+
+compileJava {
+    options.compilerArgs += ['-Amapstruct.defaultComponentModel=spring']
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+rewrite {
+    exclusion("**/*.xml", "**/*.properties", "**/*.json", "**/*.yml", "**/*.md", "build.gradle")
+
+    activeRecipe(
+            'org.openrewrite.java.OrderImports',
+            'org.openrewrite.java.RemoveUnusedImports',
+            'org.openrewrite.java.format.AutoFormat',
+            'org.openrewrite.java.format.BlankLines',
+            'org.openrewrite.java.format.MethodParamPad',
+            'org.openrewrite.java.format.NoWhitespaceAfter',
+            'org.openrewrite.java.format.NormalizeLineBreaks',
+            'org.openrewrite.java.format.NormalizeTabsOrSpaces',
+            'org.openrewrite.java.format.OperatorWrap',
+            'org.openrewrite.java.format.PadEmptyForLoopComponents',
+            'org.openrewrite.java.format.RemoveTrailingWhitespace',
+            'org.openrewrite.java.format.SingleLineComments',
+            'org.openrewrite.java.format.TypecastParenPad',
+            'org.openrewrite.java.format.WrappingAndBraces',
+            'org.openrewrite.java.security.JavaSecurityBestPractices',
+            'org.openrewrite.java.spring.http.ReplaceStringLiteralsWithMediaTypeConstants',
+            'org.openrewrite.java.spring.http.ReplaceStringLiteralsWithHttpHeadersConstants',
+            'org.openrewrite.java.testing.cleanup.RemoveEmptyTests',
+            'org.openrewrite.staticanalysis.JavaApiBestPractices',
+            'org.openrewrite.staticanalysis.CommonStaticAnalysis',
+            'org.openrewrite.staticanalysis.MissingOverrideAnnotation',
+            'org.openrewrite.staticanalysis.AddSerialVersionUidToSerializable',
+            'org.openrewrite.staticanalysis.BigDecimalRoundingConstantsToEnums',
+            'org.openrewrite.staticanalysis.BooleanChecksNotInverted',
+            'org.openrewrite.staticanalysis.CaseInsensitiveComparisonsDoNotChangeCase',
+            'org.openrewrite.staticanalysis.ChainStringBuilderAppendCalls',
+            'org.openrewrite.staticanalysis.InstanceOfPatternMatch',
+            'org.openrewrite.staticanalysis.CodeCleanup',
+            'org.openrewrite.staticanalysis.CombineSemanticallyEqualCatchBlocks',
+            'org.openrewrite.staticanalysis.DefaultComesLast',
+            'org.openrewrite.staticanalysis.CompareEnumsWithEqualityOperator',
+            'org.openrewrite.staticanalysis.FixStringFormatExpressions',
+            'org.openrewrite.staticanalysis.NeedBraces',
+            'org.openrewrite.staticanalysis.InlineVariable',
+            'org.openrewrite.staticanalysis.JavaApiBestPractices',
+            'org.openrewrite.staticanalysis.NestedEnumsAreNotStatic',
+            'org.openrewrite.staticanalysis.WhileInsteadOfFor',
+            'org.openrewrite.staticanalysis.RenameLocalVariablesToCamelCase',
+            'org.openrewrite.staticanalysis.RenamePrivateFieldsToCamelCase',
+            'org.openrewrite.staticanalysis.RemoveSystemOutPrintln',
+            'org.openrewrite.staticanalysis.EmptyBlock',
+            'org.openrewrite.staticanalysis.RemoveExtraSemicolons',
+            'org.openrewrite.staticanalysis.RemoveCallsToSystemGc',
+            'org.openrewrite.staticanalysis.RemoveRedundantTypeCast',
+            'org.openrewrite.staticanalysis.RemoveToStringCallsFromArrayInstances',
+            'org.openrewrite.staticanalysis.UnnecessaryParentheses',
+            'org.openrewrite.staticanalysis.RemoveUnneededBlock',
+            'org.openrewrite.staticanalysis.RemoveUnusedLocalVariables',
+            'org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods',
+            'org.openrewrite.staticanalysis.RenameMethodsNamedHashcodeEqualOrTostring',
+            'org.openrewrite.staticanalysis.ReplaceOptionalIsPresentWithIfPresent',
+            'org.openrewrite.staticanalysis.ExplicitCharsetOnStringGetBytes',
+            'org.openrewrite.staticanalysis.SimplifyBooleanExpression',
+            'org.openrewrite.staticanalysis.SimplifyBooleanReturn',
+            'org.openrewrite.staticanalysis.LambdaBlockToExpression',
+            'org.openrewrite.staticanalysis.StaticMethodNotFinal',
+            'org.openrewrite.staticanalysis.NoToStringOnStringType',
+            'org.openrewrite.staticanalysis.UnnecessaryThrows',
+            'org.openrewrite.staticanalysis.UpperCaseLiteralSuffixes',
+            'org.openrewrite.staticanalysis.UseDiamondOperator',
+            'org.openrewrite.staticanalysis.UseLambdaForFunctionalInterface',
+            'org.openrewrite.staticanalysis.ReplaceLambdaWithMethodReference'
+    )
+}
