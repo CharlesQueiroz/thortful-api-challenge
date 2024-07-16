@@ -1,16 +1,21 @@
 spring:
   application:
     name: Thortful
+  aop:
+    proxy-target-class: true
   datasource:
-    url: jdbc:h2:mem:starwarsdb
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:sa}
-    password: ${SPRING_DATASOURCE_PASSWORD:sa}
+    username: sa
+    password:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: ${SPRING_JPA_SHOW_SQL:true}
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+      ddl-auto: create-drop
   h2:
     console:
       enabled: ${SPRING_H2_CONSOLE_ENABLED:true}
@@ -19,7 +24,7 @@ spring:
     enabled: ${SPRING_FLYWAY_ENABLED:true}
     locations: ${SPRING_FLYWAY_LOCATIONS:classpath:db/migration}
 swapi:
-  base-url: https://swapi.dev/api
+  base-url: http://localhost:8080/mock-swapi
 
 logging:
   level:

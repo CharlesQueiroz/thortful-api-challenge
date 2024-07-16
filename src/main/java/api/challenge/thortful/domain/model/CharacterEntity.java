@@ -16,7 +16,7 @@ import static jakarta.persistence.EnumType.*;
 @SuperBuilder
 @NoArgsConstructor
 @Table(name = "character")
-public class Character extends BaseEntity {
+public class CharacterEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String name;

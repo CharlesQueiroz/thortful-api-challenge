@@ -31,7 +31,7 @@ public class Film extends BaseEntity {
     private LocalDate releaseDate;
 
     @ManyToMany(mappedBy = "films")
-    private List<Character> characters;
+    private List<CharacterEntity> characters;
 
     @ManyToMany
     @JoinTable(

@@ -38,7 +38,7 @@ public class Starship extends BaseEntity {
     private String starshipClass;
 
     @ManyToMany(mappedBy = "starships")
-    private List<Character> characters;
+    private List<CharacterEntity> characters;
 
     @ManyToMany(mappedBy = "starships")
     private List<Film> films;

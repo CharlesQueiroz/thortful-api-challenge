@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.3.1'
     id 'io.spring.dependency-management' version '1.1.5'
     id 'org.openrewrite.rewrite' version '6.16.4'
-    id 'com.github.spotbugs' version '6.0.19'
 }
 
 group = 'api.challenge'
@@ -13,12 +12,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
-}
-
-spotbugs {
-    maxHeapSize = "1g"
-    showProgress = true
-    ignoreFailures = false
 }
 
 configurations {
@@ -39,7 +32,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 
-    spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.13.0")
     rewrite(platform("org.openrewrite.recipe:rewrite-recipe-bom:2.15.0"))
     rewrite("org.openrewrite.recipe:rewrite-spring")
     rewrite("org.openrewrite.recipe:rewrite-migrate-java")
@@ -51,11 +43,18 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
+    implementation("io.github.resilience4j:resilience4j-spring-boot3")
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework:spring-aspects'
+    implementation("io.github.resilience4j:resilience4j-retry")
     implementation("org.flywaydb:flyway-core")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     implementation("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation("io.micrometer:micrometer-tracing-bridge-brave")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("io.vavr:vavr:0.10.4")
 
     compileOnly("org.projectlombok:lombok")
 
@@ -65,6 +64,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.projectlombok:lombok")
     testImplementation("io.rest-assured:rest-assured")
+    testImplementation("com.h2database:h2")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
@@ -79,10 +79,6 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-tasks {
-    project.gradle.startParameter.excludedTaskNames.add(":spotbugsTest")
 }
 
 tasks.withType(JavaCompile).configureEach {

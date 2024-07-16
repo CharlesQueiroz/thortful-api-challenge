@@ -1,0 +1,1 @@
+INSERT INTO character (uuid, api_id, name, height, gender, homeworld) VALUES ('4b90a37e-e408-4c00-b373-5b0f961c00fc', 1, 'Luke Skywalker', '172', 'MALE', 'Tatooine');
