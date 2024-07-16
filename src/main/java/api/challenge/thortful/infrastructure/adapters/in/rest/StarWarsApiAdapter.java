@@ -2,6 +2,7 @@ package api.challenge.thortful.infrastructure.adapters.in.rest;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
 import api.challenge.thortful.application.dto.SwapiFilmDTO;
+import api.challenge.thortful.application.dto.SwapiStarshipDTO;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.collection.List;
@@ -52,6 +53,15 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
 
     public List<SwapiFilmDTO> fetchFilmsByUrls(List<String> urls) {
         return urls.map(this::fetchFilmByUrl);
+    }
+
+    public SwapiStarshipDTO fetchStarshipByUrl(String url) {
+        return fetchFromApi(url, SwapiStarshipDTO.class)
+                .getOrElseThrow(() -> new RuntimeException("FAILED TO FETCH STARSHIP FROM SWAPI"));
+    }
+
+    public List<SwapiStarshipDTO> fetchStarshipsByUrls(List<String> urls) {
+        return urls.map(this::fetchStarshipByUrl);
     }
 
     private <T> Option<T> fetchFromApi(String url, Class<T> responseType) {

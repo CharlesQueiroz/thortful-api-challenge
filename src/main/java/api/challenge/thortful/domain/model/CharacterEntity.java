@@ -51,5 +51,6 @@ public class CharacterEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "character_id"),
             inverseJoinColumns = @JoinColumn(name = "starship_id")
     )
+    @Cascade(PERSIST)
     private List<StarshipEntity> starships;
 }

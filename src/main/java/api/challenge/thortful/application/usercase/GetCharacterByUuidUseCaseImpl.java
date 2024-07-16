@@ -3,6 +3,7 @@ package api.challenge.thortful.application.usercase;
 import api.challenge.thortful.application.dto.CharacterDTO;
 import api.challenge.thortful.application.mapper.CharacterMapper;
 import api.challenge.thortful.application.ports.in.FetchFilmsUseCase;
+import api.challenge.thortful.application.ports.in.FetchStarshipsUseCase;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
 import api.challenge.thortful.domain.model.CharacterEntity;
@@ -22,6 +23,7 @@ public class GetCharacterByUuidUseCaseImpl implements GetCharacterByUuidUseCase 
     private final CharacterMapper characterMapper;
     private final StarWarsApiPort starWarsApiPort;
     private final FetchFilmsUseCase fetchFilmsUseCase;
+    private final FetchStarshipsUseCase fetchStarshipsUseCase;
 
     @Override
     @Transactional
@@ -40,6 +42,9 @@ public class GetCharacterByUuidUseCaseImpl implements GetCharacterByUuidUseCase 
 
                     var films = fetchFilmsUseCase.execute(swapiDto.films());
                     character.setFilms(films.toJavaList());
+
+                    var starships = fetchStarshipsUseCase.execute(swapiDto.starships());
+                    character.setStarships(starships.toJavaList());
 
                     return characterService.create(character);
                 });
