@@ -2,6 +2,7 @@ package api.challenge.thortful.infrastructure.adapters.in.web;
 
 import api.challenge.thortful.application.dto.CharacterDTO;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
+import api.challenge.thortful.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class CharacterController {
     @GetMapping("{apiId}")
     public ResponseEntity<CharacterDTO> getCharacterByApiId(@PathVariable Long apiId) {
         log.info("RECEIVED REQUEST TO GET CHARACTER WITH ID: {}", apiId);
-        var characterDTO = getCharacterByUuidUseCase.execute(apiId);
-        log.info("SUCCESSFULLY RETRIEVED CHARACTER WITH ID: {}", apiId);
+        var characterDTO = getCharacterByUuidUseCase.execute(apiId)
+                .getOrElseThrow(() -> new ResourceNotFoundException("CHARACTER NOT FOUND WITH ID: " + apiId));
+
         log.debug("CHARACTER RETRIEVED: {}", characterDTO);
         return ok(characterDTO);
     }

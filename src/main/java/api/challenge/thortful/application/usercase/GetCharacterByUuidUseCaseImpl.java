@@ -21,12 +21,11 @@ public class GetCharacterByUuidUseCaseImpl implements GetCharacterByUuidUseCase 
     private final StarWarsApiPort starWarsApiPort;
 
     @Override
-    public CharacterDTO execute(Long apiId) {
+    public Option<CharacterDTO> execute(Long apiId) {
         return characterService.findByApiId(apiId)
                 .peek(character -> log.info("FOUND EXISTING CHARACTER WITH ID: {}", apiId))
                 .orElse(() -> fetchFromApiAndSave(apiId))
-                .map(characterMapper::entityToDto)
-                .getOrElseThrow(() -> new RuntimeException("FAILED TO FETCH OR CREATE CHARACTER"));
+                .map(characterMapper::entityToDto);
     }
 
     private Option<CharacterEntity> fetchFromApiAndSave(Long apiId) {

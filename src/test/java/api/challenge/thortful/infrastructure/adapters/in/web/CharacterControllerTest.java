@@ -92,7 +92,11 @@ class CharacterControllerTest {
                 .when()
                 .get("/api/characters/1500")
                 .then()
-                .statusCode(500);
+                .statusCode(404)
+                .body("status", equalTo(404))
+                .body("error", equalTo("Not Found"))
+                .body("message", equalTo("CHARACTER NOT FOUND WITH ID: 1500"))
+                .body("path", equalTo("/api/characters/1500"));
 
         verify(starWarsApiPort, times(1)).fetchCharacterById(1500L);
     }
