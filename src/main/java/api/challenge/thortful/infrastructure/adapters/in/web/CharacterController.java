@@ -3,6 +3,8 @@ package api.challenge.thortful.infrastructure.adapters.in.web;
 import api.challenge.thortful.application.dto.CharacterDTO;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
 import api.challenge.thortful.common.exception.ResourceNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +19,13 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/characters")
+@Tag(name = "Characters", description = "Endpoints for managing Star Wars characters")
 public class CharacterController {
 
     private final GetCharacterByUuidUseCase getCharacterByUuidUseCase;
 
     @GetMapping("{apiId}")
+    @Operation(summary = "Get character by API ID", description = "Returns a character based on the provided API ID")
     public ResponseEntity<CharacterDTO> getCharacterByApiId(@PathVariable Long apiId) {
         log.info("RECEIVED REQUEST TO GET CHARACTER WITH ID: {}", apiId);
         var characterDTO = getCharacterByUuidUseCase.execute(apiId)

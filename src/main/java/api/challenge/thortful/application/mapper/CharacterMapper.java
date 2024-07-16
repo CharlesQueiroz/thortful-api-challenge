@@ -17,6 +17,6 @@ public interface CharacterMapper {
     @Mapping(target = "films", ignore = true)
     @Mapping(target = "starships", ignore = true)
     @Mapping(target = "apiId", source = "id")
-    @Mapping(target = "gender", expression = "java(GenderType.fromString(swapiCharacter.getGender()))")
+    @Mapping(target = "gender", expression = "java(GenderType.fromString(swapiCharacter.gender()))")
     CharacterEntity swapiDtoToEntity(SwapiCharacterDTO swapiCharacter);
 }
