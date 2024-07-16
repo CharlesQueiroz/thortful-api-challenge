@@ -17,7 +17,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Table(name = "starship")
-public class Starship extends BaseEntity {
+public class StarshipEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
@@ -41,5 +41,5 @@ public class Starship extends BaseEntity {
     private List<CharacterEntity> characters;
 
     @ManyToMany(mappedBy = "starships")
-    private List<Film> films;
+    private List<FilmEntity> films;
 }

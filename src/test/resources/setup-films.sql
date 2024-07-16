@@ -1,0 +1,1 @@
+INSERT INTO film (uuid, title, episode_id, director, producer, release_date) VALUES ('4b90a37e-e408-4c00-b373-5b0f961c00fc', 'A New Hope', 4, 'George Lucas', 'Gary Kurtz, Rick McCallum', '1977-05-25');

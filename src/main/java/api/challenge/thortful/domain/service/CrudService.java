@@ -24,10 +24,6 @@ public abstract class CrudService<T extends BaseEntity, R extends BaseRepository
         return repository.findByUuid(uuid);
     }
 
-    public Option<T> findByApiId(Long apiId) {
-        return repository.findByApiId(apiId);
-    }
-
     @Override
     public Stream<T> findAll() {
         return repository.findAll().stream();

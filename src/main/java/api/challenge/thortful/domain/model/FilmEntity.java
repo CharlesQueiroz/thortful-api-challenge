@@ -15,7 +15,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @Table(name = "film")
-public class Film extends BaseEntity {
+public class FilmEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String title;
@@ -39,5 +39,5 @@ public class Film extends BaseEntity {
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "starship_id")
     )
-    private List<Starship> starships;
+    private List<StarshipEntity> starships;
 }

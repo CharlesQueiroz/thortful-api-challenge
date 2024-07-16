@@ -2,6 +2,7 @@ package api.challenge.thortful.domain.service;
 
 import api.challenge.thortful.domain.model.CharacterEntity;
 import api.challenge.thortful.infrastructure.adapters.out.persistence.CharacterRepository;
+import io.vavr.control.Option;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,5 +10,9 @@ public class CharacterService extends CrudService<CharacterEntity, CharacterRepo
 
     public CharacterService(CharacterRepository repository) {
         super(repository);
+    }
+
+    public Option<CharacterEntity> findByApiId(Long apiId) {
+        return repository.findByApiId(apiId);
     }
 }

@@ -9,6 +9,4 @@ import org.springframework.data.repository.NoRepositoryBean;
 public interface BaseRepository<T extends BaseEntity> extends JpaRepository<T, Long> {
 
     Option<T> findByUuid(String uuid);
-
-    Option<T> findByApiId(Long apiId);
 }

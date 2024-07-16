@@ -2,13 +2,15 @@ package api.challenge.thortful.domain.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Cascade;
 
 import java.util.List;
 
-import static jakarta.persistence.EnumType.*;
+import static jakarta.persistence.EnumType.STRING;
+import static org.hibernate.annotations.CascadeType.PERSIST;
 
 @Entity
 @Getter
@@ -17,6 +19,9 @@ import static jakarta.persistence.EnumType.*;
 @NoArgsConstructor
 @Table(name = "character")
 public class CharacterEntity extends BaseEntity {
+
+    @Column(nullable = false, unique = true, name = "api_id")
+    private Long apiId;
 
     @Column(nullable = false)
     private String name;
@@ -37,7 +42,8 @@ public class CharacterEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "character_id"),
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
-    private List<Film> films;
+    @Cascade(PERSIST)
+    private List<FilmEntity> films;
 
     @ManyToMany
     @JoinTable(
@@ -45,5 +51,5 @@ public class CharacterEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "character_id"),
             inverseJoinColumns = @JoinColumn(name = "starship_id")
     )
-    private List<Starship> starships;
+    private List<StarshipEntity> starships;
 }

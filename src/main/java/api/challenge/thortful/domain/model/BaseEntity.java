@@ -26,9 +26,6 @@ public abstract class BaseEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private String uuid;
 
-    @Column(nullable = false, unique = true, name = "api_id")
-    private Long apiId;
-
     @PrePersist
     protected void onCreate() {
         if (uuid == null) {

@@ -1,8 +1,10 @@
 package api.challenge.thortful.infrastructure.adapters.in.rest;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
+import api.challenge.thortful.application.dto.SwapiFilmDTO;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.collection.List;
 import io.vavr.control.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,30 +36,42 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
             backoff = @Backoff(delay = 100)
     )
     public Option<SwapiCharacterDTO> fetchCharacterById(Long apiId) {
-        log.info("Attempting to fetch character with ID: {}", apiId);
+        log.info("ATTEMPTING TO FETCH CHARACTER WITH ID: {}", apiId);
 
         var url = UriComponentsBuilder.fromHttpUrl(swapiBaseUrl)
                 .path("/people/{apiId}/")
                 .buildAndExpand(apiId)
                 .toUriString();
+        return fetchFromApi(url, SwapiCharacterDTO.class);
+    }
 
+    public SwapiFilmDTO fetchFilmByUrl(String url) {
+        return fetchFromApi(url, SwapiFilmDTO.class)
+                .getOrElseThrow(() -> new RuntimeException("FAILED TO FETCH FILM FROM SWAPI"));
+    }
+
+    public List<SwapiFilmDTO> fetchFilmsByUrls(List<String> urls) {
+        return urls.map(this::fetchFilmByUrl);
+    }
+
+    private <T> Option<T> fetchFromApi(String url, Class<T> responseType) {
         var request = new Request.Builder().url(url).build();
 
         try (var response = okHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                log.error("Unsuccessful response: {}", response);
-                throw new RuntimeException("API call failed with response code " + response.code());
+                log.error("UNSUCCESSFUL RESPONSE: {}", response);
+                throw new RuntimeException("API CALL FAILED WITH RESPONSE CODE " + response.code());
             }
 
             var responseBody = Objects.requireNonNull(response.body()).string();
-            log.debug("Response body: {}", responseBody);
+            log.debug("RESPONSE BODY: {}", responseBody);
 
-            var character = objectMapper.readValue(responseBody, SwapiCharacterDTO.class);
-            log.info("Successfully fetched character: {}", character);
-            return Option.of(character);
+            var result = objectMapper.readValue(responseBody, responseType);
+            log.info("SUCCESSFULLY FETCHED DATA: {}", result);
+            return Option.of(result);
         } catch (IOException e) {
-            log.error("Failed to fetch character from SWAPI", e);
-            throw new RuntimeException("Failed to fetch character from SWAPI", e);
+            log.error("FAILED TO FETCH DATA FROM SWAPI", e);
+            throw new RuntimeException("FAILED TO FETCH DATA FROM SWAPI", e);
         }
     }
 }

@@ -12,8 +12,6 @@ public interface ICrudService<T> {
 
     Option<T> findByUuid(String uuid);
 
-    Option<T> findByApiId(Long apiId);
-
     Stream<T> findAll();
 
     T create(T entity);
