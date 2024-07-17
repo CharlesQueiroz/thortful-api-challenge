@@ -15,6 +15,7 @@ public record SwapiCharacterDTO(
         String gender,
         String homeworld,
         List<String> films,
-        List<String> starships
+        List<String> starships,
+        String url
 ) {
 }

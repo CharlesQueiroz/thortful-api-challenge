@@ -1,6 +1,7 @@
 package api.challenge.thortful.application.ports.out;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
+import api.challenge.thortful.application.dto.SwapiCharacterResponseDTO;
 import api.challenge.thortful.application.dto.SwapiFilmDTO;
 import api.challenge.thortful.application.dto.SwapiStarshipDTO;
 import io.vavr.collection.List;
@@ -13,4 +14,6 @@ public interface StarWarsApiPort {
     List<SwapiFilmDTO> fetchFilmsByUrls(List<String> urls);
 
     List<SwapiStarshipDTO> fetchStarshipsByUrls(List<String> urls);
+
+    Option<SwapiCharacterResponseDTO> fetchCharactersPaginated(int page, int size);
 }

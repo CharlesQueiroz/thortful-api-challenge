@@ -1,6 +1,7 @@
 package api.challenge.thortful.infrastructure.adapters.out.web;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
+import api.challenge.thortful.application.dto.SwapiCharacterResponseDTO;
 import api.challenge.thortful.application.dto.SwapiFilmDTO;
 import api.challenge.thortful.application.dto.SwapiStarshipDTO;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
@@ -44,6 +45,18 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
                 .buildAndExpand(apiId)
                 .toUriString();
         return fetchFromApi(url, SwapiCharacterDTO.class);
+    }
+
+    @Override
+    public Option<SwapiCharacterResponseDTO> fetchCharactersPaginated(int page, int size) {
+        log.info("ATTEMPTING TO FETCH CHARACTERS PAGE: {}", page);
+
+        var url = UriComponentsBuilder.fromHttpUrl(swapiBaseUrl)
+                .path("/people/")
+                .queryParam("page", page)
+                .build()
+                .toUriString();
+        return fetchFromApi(url, SwapiCharacterResponseDTO.class);
     }
 
     public SwapiFilmDTO fetchFilmByUrl(String url) {
