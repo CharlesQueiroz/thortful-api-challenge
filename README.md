@@ -6,15 +6,15 @@ follows a hexagonal architecture, uses Spring Boot 3, and is packaged with Docke
 
 ## Technologies Used
 
-- **Java 17**: Programming language.
+- **Java 21**: Programming language.
 - **Spring Boot 3**: Framework for building the application.
 - **Gradle**: Build tool.
 - **Docker**: Containerization tool.
 - **Hexagonal Architecture**: Architectural pattern for maintainability and scalability.
-- **Vavr**: Functional programming library.
-- **MapStruct**: Bean mapping library.
+- **Vavr**: Functional programming library. Used for improving code readability and reliability.
+- **MapStruct**: Bean mapping library. Simplifies the mapping between DTOs and entities.
 - **OkHttp**: HTTP client for making API calls.
-- **Swagger/OpenAPI**: API documentation.
+- **Swagger/OpenAPI**: API documentation. Provides interactive API documentation.
 - **WireMock**: Mocking web services for testing.
 - **Lombok**: Code generator for reducing boilerplate.
 
@@ -131,14 +131,6 @@ This scheduler ensures that the character data is kept up to date without manual
 To avoid code duplication and promote reusability, generics have been utilized in the implementation of various use cases. 
 For example, the `FetchEntitiesUseCase` and `GetEntitiesByCharacterUuidUseCase` use generics to handle different types of entities such as films and starships. 
 This design decision helps in maintaining a cleaner and more maintainable codebase.
-
-## Good Practices
-
-	•	Hexagonal Architecture: Promotes separation of concerns and makes the codebase easier to maintain.
-	•	Vavr: Used for functional programming paradigms, improving code readability and reliability.
-	•	MapStruct: Simplifies the mapping between DTOs and entities.
-	•	Lombok: Reduces boilerplate code.
-	•	Swagger/OpenAPI: Provides interactive API documentation.
 
 ## Conclusion
 
