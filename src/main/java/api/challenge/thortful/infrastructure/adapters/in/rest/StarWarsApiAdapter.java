@@ -61,6 +61,9 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
     }
 
     public List<SwapiStarshipDTO> fetchStarshipsByUrls(List<String> urls) {
+        if (urls == null || urls.isEmpty()) {
+            return List.empty();
+        }
         return urls.map(this::fetchStarshipByUrl);
     }
 

@@ -1,1 +1,1 @@
-DELETE FROM character WHERE api_id = 1;
+DELETE FROM character;

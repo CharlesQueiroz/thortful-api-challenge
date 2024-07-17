@@ -5,10 +5,13 @@ import api.challenge.thortful.application.ports.in.FetchFilmsUseCase;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
 import api.challenge.thortful.domain.model.FilmEntity;
 import io.vavr.collection.List;
+import io.vavr.control.Option;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static io.vavr.collection.List.empty;
 
 @Slf4j
 @Service
@@ -20,8 +23,9 @@ public class FetchFilmsUseCaseImpl implements FetchFilmsUseCase {
 
     @Override
     @Transactional
-    public List<FilmEntity> execute(List<String> filmUrls) {
-        return starWarsApiPort.fetchFilmsByUrls(filmUrls)
-                .map(filmMapper::swapiDtoToEntity);
+    public List<FilmEntity> execute(Option<List<String>> filmUrls) {
+        return filmUrls.map(urls -> starWarsApiPort.fetchFilmsByUrls(urls)
+                        .map(filmMapper::swapiDtoToEntity))
+                .getOrElse(empty());
     }
 }

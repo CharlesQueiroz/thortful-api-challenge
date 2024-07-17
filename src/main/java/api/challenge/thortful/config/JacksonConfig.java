@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Configuration
 public class JacksonConfig {
@@ -17,6 +18,7 @@ public class JacksonConfig {
         objectMapper.registerModule(new VavrModule());
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
         return objectMapper;
     }
 }

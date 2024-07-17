@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Cascade;
 
@@ -15,6 +16,7 @@ import static org.hibernate.annotations.CascadeType.PERSIST;
 @Entity
 @Getter
 @Setter
+@ToString
 @SuperBuilder
 @NoArgsConstructor
 @Table(name = "character")
@@ -43,6 +45,7 @@ public class CharacterEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "film_id")
     )
     @Cascade(PERSIST)
+    @ToString.Exclude
     private List<FilmEntity> films;
 
     @ManyToMany
@@ -52,5 +55,6 @@ public class CharacterEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "starship_id")
     )
     @Cascade(PERSIST)
+    @ToString.Exclude
     private List<StarshipEntity> starships;
 }

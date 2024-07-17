@@ -1,9 +1,19 @@
 package api.challenge.thortful.infrastructure.adapters.in.web;
 
 import api.challenge.thortful.application.dto.CharacterDTO;
+import api.challenge.thortful.application.dto.FilmDTO;
+import api.challenge.thortful.application.dto.StarshipDTO;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
+import api.challenge.thortful.application.ports.in.GetFilmsByCharacterUuidUseCase;
+import api.challenge.thortful.application.ports.in.GetStarshipsByCharacterUuidUseCase;
 import api.challenge.thortful.common.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +33,59 @@ import static org.springframework.http.ResponseEntity.ok;
 public class CharacterController {
 
     private final GetCharacterByUuidUseCase getCharacterByUuidUseCase;
+    private final GetFilmsByCharacterUuidUseCase getFilmsByCharacterUuidUseCase;
+    private final GetStarshipsByCharacterUuidUseCase getStarshipsByCharacterUuidUseCase;
 
     @GetMapping("{apiId}")
-    @Operation(summary = "Get character by API ID", description = "Returns a character based on the provided API ID")
-    public ResponseEntity<CharacterDTO> getCharacterByApiId(@PathVariable Long apiId) {
+    @Operation(summary = "Get character by API ID", description = "Retrieves a Star Wars character based on the provided API ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Character found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CharacterDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Character not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+    })
+    public ResponseEntity<?> getCharacterByApiId(
+            @Parameter(description = "API ID of the character", required = true, example = "1")
+            @PathVariable Long apiId) {
         log.info("RECEIVED REQUEST TO GET CHARACTER WITH ID: {}", apiId);
         var characterDTO = getCharacterByUuidUseCase.execute(apiId)
                 .getOrElseThrow(() -> new ResourceNotFoundException("CHARACTER NOT FOUND WITH ID: " + apiId));
 
         log.debug("CHARACTER RETRIEVED: {}", characterDTO);
         return ok(characterDTO);
+    }
+
+    @GetMapping("/{uuid}/films")
+    @Operation(summary = "Get films by character UUID", description = "Retrieves a list of films in which the character with the given UUID appears")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Films found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FilmDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Character not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
+    })
+    public ResponseEntity<?> getFilmsByCharacterUuid(
+            @Parameter(description = "UUID of the character", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable String uuid) {
+        log.info("RECEIVED REQUEST TO GET FILMS FOR CHARACTER WITH UUID: {}", uuid);
+        var films = getFilmsByCharacterUuidUseCase.execute(uuid);
+
+        log.debug("FILMS RETRIEVED FOR CHARACTER WITH UUID: {}: {}", uuid, films);
+        return ok(films.toJavaList());
+    }
+
+    @GetMapping("{uuid}/starships")
+    @Operation(summary = "Get starships by character UUID", description = "Returns a list of starships associated with a character based on the provided UUID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Starships found", content = @Content(array = @ArraySchema(schema = @Schema(implementation = StarshipDTO.class)))),
+            @ApiResponse(responseCode = "404", description = "Character not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
+    })
+    public ResponseEntity<?> getStarshipsByCharacterUuid(
+            @Parameter(description = "UUID of the character", required = true, example = "123e4567-e89b-12d3-a456-426614174000")
+            @PathVariable String uuid) {
+
+        log.info("RECEIVED REQUEST TO GET STARSHIPS FOR CHARACTER WITH UUID: {}", uuid);
+        var starships = getStarshipsByCharacterUuidUseCase.execute(uuid);
+
+        log.debug("STARSHIPS RETRIEVED FOR CHARACTER WITH UUID: {}: {}", uuid, starships);
+        return ok(starships.toJavaList());
     }
 }

@@ -29,7 +29,6 @@ public class GetCharacterByUuidUseCaseImpl implements GetCharacterByUuidUseCase 
     @Transactional
     public Option<CharacterDTO> execute(Long apiId) {
         return characterService.findByApiId(apiId)
-                .peek(character -> log.info("FOUND EXISTING CHARACTER WITH ID: {}", apiId))
                 .orElse(() -> fetchAndSaveCharacterWithDetails(apiId))
                 .map(characterMapper::entityToDto);
     }
@@ -40,10 +39,10 @@ public class GetCharacterByUuidUseCaseImpl implements GetCharacterByUuidUseCase 
                     var character = characterMapper.swapiDtoToEntity(swapiDto);
                     character.setApiId(apiId);
 
-                    var films = fetchFilmsUseCase.execute(swapiDto.films());
+                    var films = fetchFilmsUseCase.execute(Option.of(swapiDto.films()));
                     character.setFilms(films.toJavaList());
 
-                    var starships = fetchStarshipsUseCase.execute(swapiDto.starships());
+                    var starships = fetchStarshipsUseCase.execute(Option.of(swapiDto.starships()));
                     character.setStarships(starships.toJavaList());
 
                     return characterService.create(character);
