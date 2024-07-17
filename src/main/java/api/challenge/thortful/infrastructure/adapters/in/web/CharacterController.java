@@ -4,6 +4,7 @@ import api.challenge.thortful.application.dto.CharacterDTO;
 import api.challenge.thortful.application.dto.FilmDTO;
 import api.challenge.thortful.application.dto.StarshipDTO;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
+import api.challenge.thortful.application.ports.in.GetCharactersByPageUseCase;
 import api.challenge.thortful.application.ports.in.GetFilmsByCharacterUuidUseCase;
 import api.challenge.thortful.application.ports.in.GetStarshipsByCharacterUuidUseCase;
 import api.challenge.thortful.common.exception.ResourceNotFoundException;
@@ -18,23 +19,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/characters")
+@RequestMapping(value = "/api/characters", produces = "application/json")
 @Tag(name = "Characters", description = "Endpoints for managing Star Wars characters")
 public class CharacterController {
 
     private final GetCharacterByUuidUseCase getCharacterByUuidUseCase;
     private final GetFilmsByCharacterUuidUseCase getFilmsByCharacterUuidUseCase;
     private final GetStarshipsByCharacterUuidUseCase getStarshipsByCharacterUuidUseCase;
+    private final GetCharactersByPageUseCase getCharactersByPageUseCase;
 
     @GetMapping("{apiId}")
     @Operation(summary = "Get character by API ID", description = "Retrieves a Star Wars character based on the provided API ID")
@@ -87,5 +86,24 @@ public class CharacterController {
 
         log.debug("STARSHIPS RETRIEVED FOR CHARACTER WITH UUID: {}: {}", uuid, starships);
         return ok(starships.toJavaList());
+    }
+
+    @GetMapping
+    @Operation(summary = "Get characters by page", description = "Retrieves a list of Star Wars characters by page")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Characters found", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CharacterDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
+    })
+    public ResponseEntity<?> getCharactersByPage(
+            @Parameter(description = "Page number", required = true, example = "0")
+            @RequestParam int page,
+            @Parameter(description = "Page size", required = true, example = "10")
+            @RequestParam int size) {
+
+        log.info("RECEIVED REQUEST TO GET CHARACTERS FOR PAGE: {}, SIZE: {}", page, size);
+        var paginatedCharacters = getCharactersByPageUseCase.execute(page, size);
+
+        log.debug("CHARACTERS RETRIEVED FOR PAGE: {}, SIZE: {}: {}", page, size, paginatedCharacters);
+        return ok(paginatedCharacters);
     }
 }

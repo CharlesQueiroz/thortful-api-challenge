@@ -219,4 +219,52 @@ class CharacterControllerTest {
 
         verify(starWarsApiPort, never()).fetchCharacterById(anyLong());
     }
+
+    @Test
+    @Sql("/setup-characters-pagination.sql")
+    @Sql(scripts = "/cleanup-characters.sql", executionPhase = AFTER_TEST_METHOD)
+    public void getCharactersByPage_Success() {
+        given()
+                .contentType("application/json")
+                .param("page", "0")
+                .param("size", "10")
+                .when()
+                .get("/api/characters")
+                .then()
+                .statusCode(200)
+                .body("data[0].name", equalTo("Luke Skywalker"))
+                .body("data[1].name", equalTo("Darth Vader"))
+                .body("data[2].name", equalTo("Leia Organa"))
+                .body("currentPage", equalTo(0))
+                .body("pageSize", equalTo(10))
+                .body("totalRecords", equalTo(3));
+    }
+
+    @Test
+    public void getCharactersByPage_BadRequest() {
+        given()
+                .contentType("application/json")
+                .param("page", "invalidPage")
+                .param("size", "10")
+                .when()
+                .get("/api/characters")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void getCharactersByPage_EmptyResult() {
+        given()
+                .contentType("application/json")
+                .param("page", "0")
+                .param("size", "10")
+                .when()
+                .get("/api/characters")
+                .then()
+                .statusCode(200)
+                .body("data", hasSize(0))
+                .body("currentPage", equalTo(0))
+                .body("pageSize", equalTo(10))
+                .body("totalRecords", equalTo(0));
+    }
 }
