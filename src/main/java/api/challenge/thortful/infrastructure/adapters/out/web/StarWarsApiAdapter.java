@@ -21,6 +21,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Adapter for interacting with the Star Wars API (SWAPI).
+ * <p>
+ * This adapter handles the retrieval of character, film, and starship data from SWAPI.
+ * </p>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -32,6 +38,12 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
     @Value("${swapi.base-url}")
     private String swapiBaseUrl;
 
+    /**
+     * Fetches a character by API ID from SWAPI.
+     *
+     * @param apiId the API ID of the character.
+     * @return an {@link Option} containing the character data if found.
+     */
     @Override
     @Retryable(
             retryFor = {RuntimeException.class},
@@ -47,6 +59,13 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
         return fetchFromApi(url, SwapiCharacterDTO.class);
     }
 
+    /**
+     * Fetches a paginated list of characters from SWAPI.
+     *
+     * @param page the page number to retrieve.
+     * @param size the number of records per page.
+     * @return an {@link Option} containing the paginated character response if found.
+     */
     @Override
     public Option<SwapiCharacterResponseDTO> fetchCharactersPaginated(int page, int size) {
         log.info("ATTEMPTING TO FETCH CHARACTERS PAGE: {}", page);
@@ -59,27 +78,58 @@ public class StarWarsApiAdapter implements StarWarsApiPort {
         return fetchFromApi(url, SwapiCharacterResponseDTO.class);
     }
 
+    /**
+     * Fetches a film by URL from SWAPI.
+     *
+     * @param url the URL of the film.
+     * @return the {@link SwapiFilmDTO} containing the film data.
+     * @throws RuntimeException if the film could not be fetched.
+     */
     public SwapiFilmDTO fetchFilmByUrl(String url) {
         return fetchFromApi(url, SwapiFilmDTO.class)
                 .getOrElseThrow(() -> new RuntimeException("FAILED TO FETCH FILM FROM SWAPI"));
     }
 
+    /**
+     * Fetches a list of films by their URLs from SWAPI.
+     *
+     * @param urls the list of film URLs.
+     * @return a list of {@link SwapiFilmDTO} containing the film data.
+     */
     public List<SwapiFilmDTO> fetchFilmsByUrls(List<String> urls) {
         return urls.map(this::fetchFilmByUrl);
     }
 
+    /**
+     * Fetches a starship by URL from SWAPI.
+     *
+     * @param url the URL of the starship.
+     * @return the {@link SwapiStarshipDTO} containing the starship data.
+     * @throws RuntimeException if the starship could not be fetched.
+     */
     public SwapiStarshipDTO fetchStarshipByUrl(String url) {
         return fetchFromApi(url, SwapiStarshipDTO.class)
                 .getOrElseThrow(() -> new RuntimeException("FAILED TO FETCH STARSHIP FROM SWAPI"));
     }
 
+    /**
+     * Fetches a list of starships by their URLs from SWAPI.
+     *
+     * @param urls the list of starship URLs.
+     * @return a list of {@link SwapiStarshipDTO} containing the starship data.
+     */
     public List<SwapiStarshipDTO> fetchStarshipsByUrls(List<String> urls) {
-        if (urls == null || urls.isEmpty()) {
-            return List.empty();
-        }
         return urls.map(this::fetchStarshipByUrl);
     }
 
+    /**
+     * Fetches data from SWAPI for a given URL and response type.
+     *
+     * @param url          the URL to fetch data from.
+     * @param responseType the type of response expected.
+     * @param <T>          the type of the response.
+     * @return an {@link Option} containing the fetched data if successful.
+     */
     private <T> Option<T> fetchFromApi(String url, Class<T> responseType) {
         var request = new Request.Builder().url(url).build();
 

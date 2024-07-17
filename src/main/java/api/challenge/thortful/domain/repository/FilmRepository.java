@@ -5,7 +5,6 @@ import api.challenge.thortful.infrastructure.adapters.out.persistence.BaseReposi
 import io.vavr.control.Option;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
 public interface FilmRepository extends BaseRepository<FilmEntity> {
 

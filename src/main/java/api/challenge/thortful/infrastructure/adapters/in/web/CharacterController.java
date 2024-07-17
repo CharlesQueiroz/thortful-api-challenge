@@ -5,8 +5,7 @@ import api.challenge.thortful.application.dto.FilmDTO;
 import api.challenge.thortful.application.dto.StarshipDTO;
 import api.challenge.thortful.application.ports.in.GetCharacterByUuidUseCase;
 import api.challenge.thortful.application.ports.in.GetCharactersByPageUseCase;
-import api.challenge.thortful.application.ports.in.GetFilmsByCharacterUuidUseCase;
-import api.challenge.thortful.application.ports.in.GetStarshipsByCharacterUuidUseCase;
+import api.challenge.thortful.application.ports.in.GetEntitiesByCharacterUuidUseCase;
 import api.challenge.thortful.common.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,24 +15,41 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
+/**
+ * REST controller for managing Star Wars characters.
+ * <p>
+ * Provides endpoints to retrieve character details, films, starships,
+ * and paginated character lists.
+ * </p>
+ */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(value = "/api/characters", produces = "application/json")
 @Tag(name = "Characters", description = "Endpoints for managing Star Wars characters")
 public class CharacterController {
 
     private final GetCharacterByUuidUseCase getCharacterByUuidUseCase;
-    private final GetFilmsByCharacterUuidUseCase getFilmsByCharacterUuidUseCase;
-    private final GetStarshipsByCharacterUuidUseCase getStarshipsByCharacterUuidUseCase;
     private final GetCharactersByPageUseCase getCharactersByPageUseCase;
+    private final GetEntitiesByCharacterUuidUseCase<FilmDTO> getFilmsByCharacterUuidUseCase;
+    private final GetEntitiesByCharacterUuidUseCase<StarshipDTO> getStarshipsByCharacterUuidUseCase;
+
+    public CharacterController(
+            GetCharacterByUuidUseCase getCharacterByUuidUseCase,
+            GetCharactersByPageUseCase getCharactersByPageUseCase,
+            @Qualifier("getFilmsByCharacterUuidUseCase") GetEntitiesByCharacterUuidUseCase<FilmDTO> getFilmsByCharacterUuidUseCase,
+            @Qualifier("getStarshipsByCharacterUuidUseCase") GetEntitiesByCharacterUuidUseCase<StarshipDTO> getStarshipsByCharacterUuidUseCase) {
+        this.getCharacterByUuidUseCase = getCharacterByUuidUseCase;
+        this.getCharactersByPageUseCase = getCharactersByPageUseCase;
+        this.getFilmsByCharacterUuidUseCase = getFilmsByCharacterUuidUseCase;
+        this.getStarshipsByCharacterUuidUseCase = getStarshipsByCharacterUuidUseCase;
+    }
 
     @GetMapping("{apiId}")
     @Operation(summary = "Get character by API ID", description = "Retrieves a Star Wars character based on the provided API ID")

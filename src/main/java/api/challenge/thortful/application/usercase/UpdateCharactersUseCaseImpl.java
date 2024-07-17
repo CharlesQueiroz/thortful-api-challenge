@@ -12,6 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of {@link UpdateCharactersUseCase} that updates characters by fetching data from the Star Wars API.
+ *
+ * <p>This class fetches paginated character data from an external Star Wars API and updates the local database
+ * with new characters. If a character already exists, it is not updated.</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,10 +27,16 @@ public class UpdateCharactersUseCaseImpl implements UpdateCharactersUseCase {
     private final StarWarsApiPort starWarsApiPort;
     private final CharacterService characterService;
 
+    /**
+     * Executes the use case to update characters.
+     *
+     * <p>This method fetches characters from the Star Wars API in a paginated manner. For each page, it iterates
+     * through the characters and creates new character entries in the local database if they do not already exist.</p>
+     */
     @Override
     @Transactional
     public void execute() {
-        int page = 1;
+        var page = 1;
         Option<SwapiCharacterResponseDTO> charactersPage;
 
         do {
@@ -40,7 +52,7 @@ public class UpdateCharactersUseCaseImpl implements UpdateCharactersUseCase {
                 .onEmpty(() -> {
                     var characterEntity = characterMapper.swapiDtoToEntity(swapiCharacter);
                     var savedEntity = characterService.create(characterEntity);
-                    log.debug("Character saved: {}", savedEntity);
+                    log.debug("CHARACTER SAVED: {}", savedEntity);
                 });
     }
 }
