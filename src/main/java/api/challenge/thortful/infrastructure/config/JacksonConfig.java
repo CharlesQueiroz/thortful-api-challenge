@@ -1,4 +1,4 @@
-package api.challenge.thortful.config;
+package api.challenge.thortful.infrastructure.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

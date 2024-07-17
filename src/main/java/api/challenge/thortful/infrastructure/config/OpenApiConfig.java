@@ -1,4 +1,4 @@
-package api.challenge.thortful.config;
+package api.challenge.thortful.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

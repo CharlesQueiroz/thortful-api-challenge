@@ -1,4 +1,4 @@
-package api.challenge.thortful.config;
+package api.challenge.thortful.infrastructure.config;
 
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;

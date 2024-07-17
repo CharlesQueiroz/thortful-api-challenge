@@ -1,7 +1,7 @@
 package api.challenge.thortful.domain.service;
 
 import api.challenge.thortful.domain.model.FilmEntity;
-import api.challenge.thortful.infrastructure.adapters.out.persistence.FilmRepository;
+import api.challenge.thortful.domain.repository.FilmRepository;
 import io.vavr.control.Option;
 import org.springframework.stereotype.Service;
 

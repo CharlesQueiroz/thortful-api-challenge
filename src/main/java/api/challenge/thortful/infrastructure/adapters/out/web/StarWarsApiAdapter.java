@@ -1,4 +1,4 @@
-package api.challenge.thortful.infrastructure.adapters.in.rest;
+package api.challenge.thortful.infrastructure.adapters.out.web;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
 import api.challenge.thortful.application.dto.SwapiFilmDTO;
