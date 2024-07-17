@@ -2,8 +2,11 @@ package api.challenge.thortful.infrastructure.adapters.in.web;
 
 import api.challenge.thortful.application.dto.SwapiCharacterDTO;
 import api.challenge.thortful.application.ports.out.StarWarsApiPort;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import io.vavr.control.Option;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +15,13 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
@@ -31,9 +37,23 @@ class CharacterControllerTest {
     @MockBean
     private StarWarsApiPort starWarsApiPort;
 
+    private static WireMockServer wireMockServer;
+
+    @BeforeAll
+    static void setupWireMockServer() {
+        wireMockServer = new WireMockServer(wireMockConfig().port(8081));
+        wireMockServer.start();
+    }
+
+    @AfterAll
+    static void stopWireMockServer() {
+        wireMockServer.stop();
+    }
+
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
+        wireMockServer.resetAll();
     }
 
     @Test
@@ -65,18 +85,18 @@ class CharacterControllerTest {
                 .homeworld("Tatooine")
                 .build();
 
+        wireMockServer.stubFor(get(urlEqualTo("/people/1/"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile("api/character-1.json")));
+
         when(starWarsApiPort.fetchCharacterById(1L)).thenReturn(Option.of(characterFromApi));
 
-        var response = given()
+        given()
                 .contentType("application/json")
                 .when()
                 .get("/api/characters/1")
                 .then()
-                .extract().response();
-
-        System.out.println("Response: " + response.asString());
-
-        response.then()
                 .statusCode(200)
                 .body("apiId", equalTo(1))
                 .body("name", equalTo("Darth Vader"))

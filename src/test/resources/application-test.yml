@@ -24,7 +24,7 @@ spring:
     enabled: ${SPRING_FLYWAY_ENABLED:true}
     locations: ${SPRING_FLYWAY_LOCATIONS:classpath:db/migration}
 swapi:
-  base-url: http://localhost:8080/mock-swapi
+  base-url: http://localhost:8081/api
 
 logging:
   level:

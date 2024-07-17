@@ -68,6 +68,7 @@ dependencies {
     testImplementation("org.projectlombok:lombok")
     testImplementation("io.rest-assured:rest-assured")
     testImplementation("com.h2database:h2")
+    testImplementation("org.wiremock:wiremock-standalone:3.8.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
